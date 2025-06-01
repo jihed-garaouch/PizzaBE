@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using PizzaBE.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 
