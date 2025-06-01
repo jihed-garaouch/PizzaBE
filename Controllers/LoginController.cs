@@ -29,18 +29,33 @@ public class LoginController : ControllerBase
         var result = await _signInManager.PasswordSignInAsync(user, dto.Password, isPersistent: true, lockoutOnFailure: false);
         if (!result.Succeeded)
             return Unauthorized("Invalid email or password");
-
+        Response.Redirect("http://localhost:5173/");
         return Ok("Logged in successfully");
     }
 
-    [HttpPost("logout")]
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetMyInfo()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return Unauthorized();
+
+        return Ok(new UserDto
+        {
+            Email = user.Email,
+            Role = user.Role
+        });
+    }
+    [HttpPost()]
     [Authorize]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
+        Response.Redirect("http://localhost:5173/login");
         return Ok("Logged out successfully");
     }
-    [HttpPost("register")]
+    [HttpPost()]
    
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
@@ -52,7 +67,7 @@ public class LoginController : ControllerBase
         {
             UserName = dto.Email,
             Email = dto.Email,
-            Role = dto.Role
+            Role = PizzaBE.Enums.ERoles.CUSTOMER 
         };
 
         var result = await _userManager.CreateAsync(user, dto.Password);
@@ -60,6 +75,7 @@ public class LoginController : ControllerBase
             return BadRequest(result.Errors);
 
         await _signInManager.SignInAsync(user, isPersistent: true);
+        Response.Redirect("http://localhost:5173/");
         return Ok("Registration successful and user logged in");
     }
 }
