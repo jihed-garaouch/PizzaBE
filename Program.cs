@@ -14,6 +14,18 @@ builder.Services.AddIdentity<User, IdentityRole>()
 
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+                          policy =>
+                          {
+                              policy.WithOrigins("http://localhost:5173")
+                                                  .AllowAnyHeader()
+                                                  .AllowCredentials()
+                                                  .AllowAnyMethod();
+                          });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -25,7 +37,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
